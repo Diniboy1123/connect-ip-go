@@ -229,7 +229,7 @@ func handleConn(conn *connectip.Conn, addr netip.Addr, route netip.Prefix, ipPro
 	go func() {
 		for {
 			b := make([]byte, 1500)
-			n, err := conn.ReadPacket(b)
+			n, err := conn.ReadPacket(b, false)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to read from connection: %w", err)
 				return

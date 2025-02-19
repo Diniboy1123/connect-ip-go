@@ -177,7 +177,7 @@ func TestTTLs(t *testing.T) {
 		require.Empty(t, icmp)
 
 		receivedPacket := make([]byte, 1500)
-		n, err := server.ReadPacket(receivedPacket)
+		n, err := server.ReadPacket(receivedPacket, false)
 		require.NoError(t, err)
 		receivedPacket = receivedPacket[:n]
 
@@ -223,7 +223,7 @@ func TestTTLs(t *testing.T) {
 		require.Empty(t, icmp)
 
 		receivedPacket := make([]byte, 1500)
-		n, err := server.ReadPacket(receivedPacket)
+		n, err := server.ReadPacket(receivedPacket, false)
 		require.NoError(t, err)
 		receivedPacket = receivedPacket[:n]
 
@@ -273,7 +273,7 @@ func TestClosing(t *testing.T) {
 		}),
 		net.ErrClosed,
 	)
-	_, err = client.ReadPacket([]byte{0})
+	_, err = client.ReadPacket([]byte{0}, false)
 	require.ErrorIs(t, err, net.ErrClosed)
 	_, err = client.WritePacket(ipv6Packet)
 	require.ErrorIs(t, err, net.ErrClosed)
@@ -292,7 +292,7 @@ func TestClosing(t *testing.T) {
 		t.Fatal("timeout")
 	}
 
-	_, err = server.ReadPacket([]byte{0})
+	_, err = server.ReadPacket([]byte{0}, false)
 	require.ErrorIs(t, err, net.ErrClosed)
 	_, err = server.WritePacket(ipv6Packet)
 	require.ErrorIs(t, err, net.ErrClosed)

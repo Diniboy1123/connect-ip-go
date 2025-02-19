@@ -204,7 +204,7 @@ func proxy(ipconn *connectip.Conn, dev *water.Interface) error {
 	go func() {
 		for {
 			b := make([]byte, 1500)
-			n, err := ipconn.ReadPacket(b)
+			n, err := ipconn.ReadPacket(b, false)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to read from connection: %w", err)
 				return
