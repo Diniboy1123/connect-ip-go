@@ -256,7 +256,7 @@ func (c *Conn) writeToStream() error {
 	}
 }
 
-func (c *Conn) ReadPacket(b []byte) (n int, err error) {
+func (c *Conn) ReadPacket(b []byte, allowAny bool) (n int, err error) {
 start:
 	data, err := c.str.ReceiveDatagram(context.Background())
 	if err != nil {
@@ -276,14 +276,14 @@ start:
 		// Drop this datagram. We currently only support proxying of IP payloads.
 		goto start
 	}
-	if err := c.handleIncomingProxiedPacket(data[n:]); err != nil {
+	if err := c.handleIncomingProxiedPacket(data[n:], allowAny); err != nil {
 		log.Printf("dropping proxied packet: %s", err)
 		goto start
 	}
 	return copy(b, data[n:]), nil
 }
 
-func (c *Conn) handleIncomingProxiedPacket(data []byte) error {
+func (c *Conn) handleIncomingProxiedPacket(data []byte, allowAny bool) error {
 	if len(data) == 0 {
 		return errors.New("connect-ip: empty packet")
 	}
@@ -328,6 +328,11 @@ func (c *Conn) handleIncomingProxiedPacket(data []byte) error {
 	// 1. is within one of the ranges assigned to us, or
 	// 2. is within one of the ranges that we advertised to the peer.
 	var isAllowedDst bool
+
+	if allowAny {
+		isAllowedDst = true
+	}
+
 	if len(assignedAddresses) > 0 {
 		isAllowedDst = slices.ContainsFunc(assignedAddresses, func(p netip.Prefix) bool { return p.Contains(dst) })
 	}
