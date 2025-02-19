@@ -147,7 +147,7 @@ func establishConn(proxyAddr netip.AddrPort, keyLog io.Writer) (*water.Interface
 	hconn := tr.NewClientConn(conn)
 
 	template := uritemplate.MustNew(fmt.Sprintf("https://proxy:%d/vpn", proxyAddr.Port()))
-	ipconn, rsp, err := connectip.Dial(ctx, hconn, template, "connect-ip")
+	ipconn, rsp, err := connectip.Dial(ctx, hconn, template, "connect-ip", http.Header{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to dial connect-ip connection: %w", err)
 	}
