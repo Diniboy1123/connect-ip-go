@@ -181,7 +181,7 @@ func run(bindTo netip.AddrPort, remoteAddr netip.Addr, route netip.Prefix, ipPro
 	p := connectip.Proxy{}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/vpn", func(w http.ResponseWriter, r *http.Request) {
-		req, err := connectip.ParseRequest(r, template)
+		req, err := connectip.ParseRequest(r, template, "connect-ip")
 		if err != nil {
 			var perr *connectip.RequestParseError
 			if errors.As(err, &perr) {
