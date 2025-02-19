@@ -31,7 +31,7 @@ func setupConns(t *testing.T) (client, server *Conn) {
 	connChan := make(chan *Conn, 1)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/connect-ip", func(w http.ResponseWriter, r *http.Request) {
-		mreq, err := ParseRequest(r, template)
+		mreq, err := ParseRequest(r, template, "connect-ip")
 		require.NoError(t, err)
 
 		conn, err := p.Proxy(w, mreq)
@@ -63,7 +63,7 @@ func setupConns(t *testing.T) (client, server *Conn) {
 	tr := &http3.Transport{EnableDatagrams: true}
 	t.Cleanup(func() { tr.Close() })
 
-	client, rsp, err := Dial(ctx, tr.NewClientConn(cconn), template)
+	client, rsp, err := Dial(ctx, tr.NewClientConn(cconn), template, "connect-ip")
 	require.NoError(t, err)
 	require.Equal(t, rsp.StatusCode, http.StatusOK)
 

@@ -12,7 +12,7 @@ import (
 )
 
 // Dial dials a proxied connection to a target server.
-func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Template) (*Conn, *http.Response, error) {
+func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Template, requestProtocol string) (*Conn, *http.Response, error) {
 	if len(template.Varnames()) > 0 {
 		return nil, nil, errors.New("connect-ip: IP flow forwarding not supported")
 	}
