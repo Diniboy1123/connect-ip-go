@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"net/http"
 	"testing"
 	"time"
 
@@ -19,6 +20,7 @@ func TestClientInvalidTemplate(t *testing.T) {
 		nil,
 		uritemplate.MustNew("https://example.org/.well-known/masque/ip/{target}/{ipproto}/"),
 		"connect-ip",
+		http.Header{},
 	)
 	require.ErrorContains(t, err, "connect-ip: IP flow forwarding not supported")
 }
@@ -49,6 +51,7 @@ func TestClientWaitForSettings(t *testing.T) {
 		tr.NewClientConn(cconn),
 		uritemplate.MustNew("https://example.org/.well-known/masque/ip/"),
 		"connect-ip",
+		http.Header{},
 	)
 	require.ErrorIs(t, err, context.DeadlineExceeded)
 }
@@ -84,6 +87,7 @@ func TestClientDatagramCheck(t *testing.T) {
 		tr.NewClientConn(cconn),
 		uritemplate.MustNew("https://example.org/.well-known/masque/ip/"),
 		"connect-ip",
+		http.Header{},
 	)
 	require.ErrorContains(t, err, "connect-ip: server didn't enable datagrams")
 }

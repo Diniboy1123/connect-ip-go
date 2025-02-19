@@ -12,7 +12,7 @@ import (
 )
 
 // Dial dials a proxied connection to a target server.
-func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Template, requestProtocol string) (*Conn, *http.Response, error) {
+func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Template, requestProtocol string, additionalHeaders http.Header) (*Conn, *http.Response, error) {
 	if len(template.Varnames()) > 0 {
 		return nil, nil, errors.New("connect-ip: IP flow forwarding not supported")
 	}
@@ -37,6 +37,11 @@ func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Tem
 		return nil, nil, errors.New("connect-ip: server didn't enable datagrams")
 	}
 
+	headers := http.Header{http3.CapsuleProtocolHeader: []string{capsuleProtocolHeaderValue}}
+	for k, v := range additionalHeaders {
+		headers[k] = v
+	}
+
 	rstr, err := conn.OpenRequestStream(ctx)
 	if err != nil {
 		return nil, nil, fmt.Errorf("connect-ip: failed to open request stream: %w", err)
@@ -45,7 +50,7 @@ func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Tem
 		Method: http.MethodConnect,
 		Proto:  requestProtocol,
 		Host:   u.Host,
-		Header: http.Header{http3.CapsuleProtocolHeader: []string{capsuleProtocolHeaderValue}},
+		Header: headers,
 		URL:    u,
 	}); err != nil {
 		return nil, nil, fmt.Errorf("connect-ip: failed to send request: %w", err)

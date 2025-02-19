@@ -63,7 +63,7 @@ func setupConns(t *testing.T) (client, server *Conn) {
 	tr := &http3.Transport{EnableDatagrams: true}
 	t.Cleanup(func() { tr.Close() })
 
-	client, rsp, err := Dial(ctx, tr.NewClientConn(cconn), template, "connect-ip")
+	client, rsp, err := Dial(ctx, tr.NewClientConn(cconn), template, "connect-ip", http.Header{})
 	require.NoError(t, err)
 	require.Equal(t, rsp.StatusCode, http.StatusOK)
 
