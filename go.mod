@@ -1,4 +1,4 @@
-module github.com/quic-go/connect-ip-go
+module github.com/Diniboy1123/connect-ip-go
 
 go 1.24
 

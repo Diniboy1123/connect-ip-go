@@ -1,9 +1,9 @@
-module github.com/quic-go/connect-ip-go/integration
+module github.com/Diniboy1123/connect-ip-go/integration
 
 go 1.23
 
 require (
-	github.com/quic-go/connect-ip-go v0.0.0-20241020031425-59b7c60ba830
+	github.com/Diniboy1123/connect-ip-go v0.0.0-20250220050656-56698ca53ed4
 	github.com/quic-go/quic-go v0.48.0
 	github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
 	github.com/stretchr/testify v1.9.0
