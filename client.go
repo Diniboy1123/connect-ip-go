@@ -12,7 +12,7 @@ import (
 )
 
 // Dial dials a proxied connection to a target server.
-func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Template, requestProtocol string, additionalHeaders http.Header) (*Conn, *http.Response, error) {
+func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Template, requestProtocol string, additionalHeaders http.Header, ignoreExtendedConnect bool) (*Conn, *http.Response, error) {
 	if len(template.Varnames()) > 0 {
 		return nil, nil, errors.New("connect-ip: IP flow forwarding not supported")
 	}
@@ -30,7 +30,7 @@ func Dial(ctx context.Context, conn *http3.ClientConn, template *uritemplate.Tem
 	case <-conn.ReceivedSettings():
 	}
 	settings := conn.Settings()
-	if !settings.EnableExtendedConnect {
+	if !ignoreExtendedConnect && !settings.EnableExtendedConnect {
 		return nil, nil, errors.New("connect-ip: server didn't enable Extended CONNECT")
 	}
 	if !settings.EnableDatagrams {
