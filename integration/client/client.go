@@ -16,8 +16,8 @@ import (
 	"syscall"
 	"time"
 
-	connectip "github.com/quic-go/connect-ip-go"
-	"github.com/quic-go/connect-ip-go/integration/internal/utils"
+	connectip "github.com/Diniboy1123/connect-ip-go"
+	"github.com/Diniboy1123/connect-ip-go/integration/internal/utils"
 
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
