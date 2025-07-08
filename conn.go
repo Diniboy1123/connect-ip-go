@@ -43,9 +43,9 @@ const (
 // On IPv6, the minimum MTU of a link is 1280 bytes.
 const minMTU = 1280
 
-// Conn is a connection that proxies IP packets over HTTP/3.
+// Conn is a connection that proxies IP packets over HTTP/2 or HTTP/3.
 type Conn struct {
-	str    http3.Stream
+	str    Stream
 	writes chan writeCapsule
 
 	assignedAddressNotify chan struct{}
@@ -61,7 +61,7 @@ type Conn struct {
 	closeErr  error
 }
 
-func newProxiedConn(str http3.Stream) *Conn {
+func newProxiedConn(str Stream) *Conn {
 	c := &Conn{
 		str:                   str,
 		writes:                make(chan writeCapsule),
@@ -413,7 +413,7 @@ func (c *Conn) Close() error {
 		close(c.closeChan)
 	}
 	c.mu.Unlock()
-	c.str.CancelRead(quic.StreamErrorCode(http3.ErrCodeNoError))
+	c.str.CancelRead(uint64(http3.ErrCodeNoError))
 	err := c.str.Close()
 	return err
 }

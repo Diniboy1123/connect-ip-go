@@ -34,7 +34,7 @@ func setupConns(t *testing.T) (client, server *Conn) {
 		mreq, err := ParseRequest(r, template, "connect-ip")
 		require.NoError(t, err)
 
-		conn, err := p.Proxy(w, mreq)
+		conn, err := p.Proxy(w, r, mreq)
 		require.NoError(t, err)
 		connChan <- conn
 	})

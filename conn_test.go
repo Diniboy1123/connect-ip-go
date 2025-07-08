@@ -11,7 +11,6 @@ import (
 	"golang.org/x/net/ipv6"
 
 	"github.com/quic-go/quic-go"
-	"github.com/quic-go/quic-go/http3"
 
 	"github.com/stretchr/testify/require"
 )
@@ -29,7 +28,7 @@ type mockStream struct {
 	sendDatagramErr error
 }
 
-var _ http3.Stream = &mockStream{}
+var _ Stream = &mockStream{}
 
 func (m *mockStream) StreamID() quic.StreamID { panic("implement me") }
 func (m *mockStream) Read(p []byte) (int, error) {
@@ -40,14 +39,14 @@ func (m *mockStream) Read(p []byte) (int, error) {
 	m.reading = m.reading[n:]
 	return n, nil
 }
-func (m *mockStream) CancelRead(quic.StreamErrorCode)   {}
-func (m *mockStream) Write(p []byte) (n int, err error) { return len(p), nil }
-func (m *mockStream) Close() error                      { return nil }
-func (m *mockStream) CancelWrite(quic.StreamErrorCode)  {}
-func (m *mockStream) Context() context.Context          { return context.Background() }
-func (m *mockStream) SetWriteDeadline(time.Time) error  { return nil }
-func (m *mockStream) SetReadDeadline(time.Time) error   { return nil }
-func (m *mockStream) SetDeadline(time.Time) error       { return nil }
+func (m *mockStream) CancelRead(code uint64)                {}
+func (m *mockStream) Write(p []byte) (n int, err error)     { return len(p), nil }
+func (m *mockStream) Close() error                          { return nil }
+func (m *mockStream) CancelWrite(quic.StreamErrorCode)      {}
+func (m *mockStream) Context() context.Context              { return context.Background() }
+func (m *mockStream) SetWriteDeadline(time.Time) error      { return nil }
+func (m *mockStream) SetReadDeadline(time.Time) error       { return nil }
+func (m *mockStream) SetDeadline(time.Time) error           { return nil }
 func (m *mockStream) SendDatagram(data []byte) error    { return m.sendDatagramErr }
 func (m *mockStream) ReceiveDatagram(ctx context.Context) ([]byte, error) {
 	<-ctx.Done()
