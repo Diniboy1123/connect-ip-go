@@ -3,3 +3,34 @@ integration/server/server
 integration/proxy/proxy
 integration/proxy/*.pem
 logs/
+
+# Build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Examples binary
+examples/http2_support
+
+# Test coverage
+*.prof
+coverage.txt
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

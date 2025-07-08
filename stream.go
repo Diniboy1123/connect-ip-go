@@ -122,7 +122,12 @@ func (s *HTTP2Stream) Write(p []byte) (n int, err error) {
 }
 
 func (s *HTTP2Stream) Close() error {
-	close(s.closeCh)
+	select {
+	case <-s.closeCh:
+		// Already closed
+	default:
+		close(s.closeCh)
+	}
 	return s.stream.Close()
 }
 
