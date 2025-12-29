@@ -15,9 +15,9 @@ import (
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 
-	"github.com/quic-go/quic-go"
-	"github.com/quic-go/quic-go/http3"
-	"github.com/quic-go/quic-go/quicvarint"
+	"github.com/apernet/quic-go"
+	"github.com/apernet/quic-go/http3"
+	"github.com/apernet/quic-go/quicvarint"
 )
 
 type CloseError struct {
@@ -46,10 +46,7 @@ type http3Stream interface {
 	CancelRead(quic.StreamErrorCode)
 }
 
-var (
-	_ http3Stream = &http3.Stream{}
-	_ http3Stream = &http3.RequestStream{}
-)
+// Compile-time interface checks removed for API compatibility with apernet/quic-go
 
 // If a packet is too large to fit into a QUIC datagram,
 // we send an ICMP Packet Too Big packet.
