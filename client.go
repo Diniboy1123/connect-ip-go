@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/quic-go/quic-go/http3"
+	"github.com/apernet/quic-go/http3"
 	"github.com/yosida95/uritemplate/v3"
 )
 

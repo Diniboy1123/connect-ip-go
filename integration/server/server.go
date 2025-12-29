@@ -10,8 +10,8 @@ import (
 
 	"github.com/Diniboy1123/connect-ip-go/integration/internal/utils"
 
-	"github.com/quic-go/quic-go"
-	"github.com/quic-go/quic-go/http3"
+	"github.com/apernet/quic-go"
+	"github.com/apernet/quic-go/http3"
 )
 
 func main() {
