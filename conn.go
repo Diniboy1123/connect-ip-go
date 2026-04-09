@@ -61,6 +61,8 @@ type Conn struct {
 	str    http3Stream
 	writes chan writeCapsule
 
+	supportsControlCapsules bool
+
 	assignedAddressNotify chan struct{}
 	availableRoutesNotify chan struct{}
 
@@ -75,35 +77,46 @@ type Conn struct {
 }
 
 func newProxiedConn(str http3Stream) *Conn {
+	return newConn(str, true)
+}
+
+func newDatagramOnlyConn(str http3Stream) *Conn {
+	return newConn(str, false)
+}
+
+func newConn(str http3Stream, supportsControlCapsules bool) *Conn {
 	c := &Conn{
-		str:                   str,
-		writes:                make(chan writeCapsule),
-		assignedAddressNotify: make(chan struct{}, 1),
-		availableRoutesNotify: make(chan struct{}, 1),
-		closeChan:             make(chan struct{}),
+		str:                     str,
+		writes:                  make(chan writeCapsule),
+		supportsControlCapsules: supportsControlCapsules,
+		assignedAddressNotify:   make(chan struct{}, 1),
+		availableRoutesNotify:   make(chan struct{}, 1),
+		closeChan:               make(chan struct{}),
 	}
-	go func() {
-		if err := c.readFromStream(); err != nil {
-			log.Printf("handling stream failed: %v", err)
-			c.mu.Lock()
-			if c.closeErr == nil {
-				c.closeErr = &CloseError{Remote: true}
-				close(c.closeChan)
+	if supportsControlCapsules {
+		go func() {
+			if err := c.readFromStream(); err != nil {
+				log.Printf("handling stream failed: %v", err)
+				c.mu.Lock()
+				if c.closeErr == nil {
+					c.closeErr = &CloseError{Remote: true}
+					close(c.closeChan)
+				}
+				c.mu.Unlock()
 			}
-			c.mu.Unlock()
-		}
-	}()
-	go func() {
-		if err := c.writeToStream(); err != nil {
-			log.Printf("writing to stream failed: %v", err)
-			c.mu.Lock()
-			if c.closeErr == nil {
-				c.closeErr = &CloseError{Remote: true}
-				close(c.closeChan)
+		}()
+		go func() {
+			if err := c.writeToStream(); err != nil {
+				log.Printf("writing to stream failed: %v", err)
+				c.mu.Lock()
+				if c.closeErr == nil {
+					c.closeErr = &CloseError{Remote: true}
+					close(c.closeChan)
+				}
+				c.mu.Unlock()
 			}
-			c.mu.Unlock()
-		}
-	}()
+		}()
+	}
 	return c
 }
 
@@ -137,6 +150,10 @@ func (c *Conn) AssignAddresses(ctx context.Context, prefixes []netip.Prefix) err
 }
 
 func (c *Conn) sendCapsule(ctx context.Context, capsule appendable) error {
+	if !c.supportsControlCapsules {
+		return errors.New("connect-ip: control capsules are not supported by this transport")
+	}
+
 	res := make(chan error, 1)
 	select {
 	case c.writes <- writeCapsule{
