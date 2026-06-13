@@ -94,13 +94,17 @@ func (s *h2DatagramStream) ReceiveDatagram(_ context.Context) ([]byte, error) {
 			return nil, err
 		}
 		if ok {
-			s.recvBuf = s.recvBuf[consumed:]
 			if capsuleType != h2DatagramCapsuleType {
+				s.recvBuf = s.recvBuf[consumed:]
 				continue
 			}
-			data := make([]byte, 0, len(contextIDZero)+len(payload))
-			data = append(data, contextIDZero...)
-			data = append(data, payload...)
+			payloadOffset := consumed - len(payload)
+			if payloadOffset < len(contextIDZero) {
+				return nil, errors.New("connect-ip: malformed datagram capsule")
+			}
+			copy(s.recvBuf[payloadOffset-len(contextIDZero):payloadOffset], contextIDZero)
+			data := s.recvBuf[payloadOffset-len(contextIDZero) : consumed]
+			s.recvBuf = s.recvBuf[consumed:]
 			return data, nil
 		}
 
